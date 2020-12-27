@@ -1,0 +1,26 @@
+name: CI
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-latest
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.15
+
+      - name: Check out source code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: go build -v
+
+      - name: Test
+        run: go test -v
+
+      - name: Package
+        run: go get fyne.io/fyne/cmd/fyne && fyne package -name garbo -os darwin -release
