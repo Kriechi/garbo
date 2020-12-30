@@ -21,6 +21,11 @@ The scope of this project is kept deliberately narrow:
 
 The name **garbo** may or may not be derived from **G**o **AR**chive **B**r**O**wser.
 
+## Screenshots
+
+![Screenshot of the open window](/screenshots/open-window.png)
+![Screenshot of the archive browser](/screenshots/archive-window.png)
+
 ## Alternative Projects
 
 [7-Zip](https://www.7-zip.org/) does not have a macOS GUI application.
