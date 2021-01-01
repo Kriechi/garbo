@@ -173,7 +173,6 @@ func buildOpenView(mainWindow fyne.Window) *fyne.Container {
 		dialogWindow.Show()
 
 		dialogCallback := func(file fyne.URIReadCloser, err error) {
-			dialogWindow.Close()
 			if err != nil || file == nil {
 				return
 			}
@@ -182,11 +181,12 @@ func buildOpenView(mainWindow fyne.Window) *fyne.Container {
 			if content != nil {
 				mainWindow.SetContent(content)
 			}
+			dialogWindow.Close()
 		}
 
 		dialog := dialog.NewFileOpen(dialogCallback, dialogWindow)
 		dialog.Show()
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(300 * time.Millisecond)
 		dialog.Resize(dialogSize)
 	}
 	openArchiveButton := widget.NewButton("Open archive...", openArchiveButtonCallback)
