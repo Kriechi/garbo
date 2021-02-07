@@ -15,11 +15,12 @@ import (
 
 	"github.com/mholt/archiver/v3"
 
-	"fyne.io/fyne"
-	"fyne.io/fyne/app"
-	"fyne.io/fyne/dialog"
-	"fyne.io/fyne/layout"
-	"fyne.io/fyne/widget"
+	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/storage"
+	"fyne.io/fyne/v2/widget"
 )
 
 // UIFile is a helper struct to abstract the archive implementation and only extract the info for the UI
@@ -96,6 +97,8 @@ func extractFile(filePath string, fileToExtract UIFile) {
 	}
 
 	dialog := dialog.NewFolderOpen(dialogCallback, dialogWindow)
+	location, _ := storage.ListerForURI(storage.NewFileURI(path.Dir(filePath)))
+	dialog.SetLocation(location)
 	dialog.Show()
 	time.Sleep(100 * time.Millisecond)
 	dialog.Resize(dialogSize)
@@ -177,8 +180,8 @@ func buildOpenView(mainWindow fyne.Window) *fyne.Container {
 				return
 			}
 			filePath := strings.TrimPrefix(file.URI().String(), "file://")
-			content := buildArchiveView(mainWindow, filePath)
-			if content != nil {
+			content, err := buildArchiveView(mainWindow, filePath)
+			if err == nil {
 				mainWindow.SetContent(content)
 			}
 			dialogWindow.Close()
@@ -198,19 +201,19 @@ func buildOpenView(mainWindow fyne.Window) *fyne.Container {
 	)
 }
 
-func buildArchiveView(mainWindow fyne.Window, filePath string) *fyne.Container {
+func buildArchiveView(mainWindow fyne.Window, filePath string) (*fyne.Container, error) {
 	top := widget.NewLabel(fmt.Sprintf("Viewing archive: %s", filePath))
 	center, err := buildTree(filePath)
 	if err != nil {
 		errorLabel := widget.NewLabel(err.Error())
 		widget.ShowPopUp(errorLabel, mainWindow.Canvas())
-		return nil
+		return nil, err
 	}
 	return fyne.NewContainerWithLayout(
 		layout.NewBorderLayout(top, nil, nil, nil),
 		top,
 		center,
-	)
+	), nil
 }
 
 func main() {
@@ -221,12 +224,17 @@ func main() {
 	if len(os.Args) == 2 {
 		if os.Args[1] == "-version" || os.Args[1] == "--version" {
 			fmt.Println("garbo")
-			fmt.Println("Copyright (c) 2020 Thomas Kriechbaumer")
+			fmt.Println("Copyright (c) 2021 Thomas Kriechbaumer")
 			fmt.Println("See https://github.com/Kriechi/garbo for more information.")
 			os.Exit(0)
 			return
 		}
-		content = buildArchiveView(mainWindow, os.Args[1])
+		c, err := buildArchiveView(mainWindow, os.Args[1])
+		if err != nil {
+			content = buildOpenView(mainWindow)
+		} else {
+			content = c
+		}
 	} else {
 		content = buildOpenView(mainWindow)
 	}
