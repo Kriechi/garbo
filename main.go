@@ -8,7 +8,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/nwaples/rardecode"
@@ -73,9 +72,9 @@ func extractFile(filePath string, fileToExtract UIFile) {
 	dialogSize := fyne.NewSize(700, 500)
 
 	dialogWindow := fyne.CurrentApp().NewWindow("Select destination...")
-	dialogWindow.Resize(dialogSize)
 	dialogWindow.CenterOnScreen()
 	dialogWindow.Show()
+	dialogWindow.Resize(dialogSize)
 
 	dialogCallback := func(list fyne.ListableURI, err error) {
 		dialogWindow.Close()
@@ -100,7 +99,6 @@ func extractFile(filePath string, fileToExtract UIFile) {
 	location, _ := storage.ListerForURI(storage.NewFileURI(path.Dir(filePath)))
 	dialog.SetLocation(location)
 	dialog.Show()
-	time.Sleep(100 * time.Millisecond)
 	dialog.Resize(dialogSize)
 }
 
@@ -171,9 +169,9 @@ func buildOpenView(mainWindow fyne.Window) *fyne.Container {
 		dialogSize := fyne.NewSize(700, 500)
 
 		dialogWindow := fyne.CurrentApp().NewWindow("Open archive...")
-		dialogWindow.Resize(dialogSize)
 		dialogWindow.CenterOnScreen()
 		dialogWindow.Show()
+		dialogWindow.Resize(dialogSize)
 
 		dialogCallback := func(file fyne.URIReadCloser, err error) {
 			if err != nil || file == nil {
@@ -189,7 +187,6 @@ func buildOpenView(mainWindow fyne.Window) *fyne.Container {
 
 		dialog := dialog.NewFileOpen(dialogCallback, dialogWindow)
 		dialog.Show()
-		time.Sleep(300 * time.Millisecond)
 		dialog.Resize(dialogSize)
 	}
 	openArchiveButton := widget.NewButton("Open archive...", openArchiveButtonCallback)
